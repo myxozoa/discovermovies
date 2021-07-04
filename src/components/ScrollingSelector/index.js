@@ -18,7 +18,7 @@ export function ScrollingSelector({ dataUrl, placeholderData, label, width = "15
     }
 
     getData();
-  }, []);
+  }, [dataUrl]);
 
   return (
     <div className={styles.container}>
