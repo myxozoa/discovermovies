@@ -1,64 +1,30 @@
 import React, { useEffect, useState, useRef } from "react";
-
+import { throttle, tmdbRequest, generateTmdbImageUrl } from "../../utils";
+import { scrollHandler, scroll } from "./utils";
 import styles from "./styles.module.css";
-
-function throttle(func, limit = 200) {
-  let waiting = false;
-  return (...args) => {
-    if (!waiting) {
-      func(...args);
-      waiting = true;
-      setTimeout(() => (waiting = false), limit);
-    }
-  };
-}
-
-const scrollHandler = (setState) => (event) => {
-  const scrollPosition = event.target.scrollLeft;
-  setState(scrollPosition);
-};
-
-const scroll = (direction, ref) => () => {
-  if (direction === "left") {
-    ref.current.scrollBy({ left: -330, behavior: "smooth" });
-  } else {
-    ref.current.scrollBy({ left: 330, behavior: "smooth" });
-  }
-};
 
 export function ScrollingSelector({ dataUrl, placeholderData, headerText, width = "150px", height = "225px", imgSize = "w342" }) {
   const [data, setData] = useState(placeholderData);
-  const [scrollPosition, setScrollPosition] = useState(0);
-  const [atScrollConstraint, setAtScrollConstraint] = useState("none"); // 'none' | 'start' | 'end'
+  const [atScrollConstraint, setAtScrollConstraint] = useState("start"); // 'none' | 'start' | 'end'
   const scrollContainer = useRef(null);
 
   useEffect(() => {
     const _scrollContainerRef = scrollContainer.current;
-    const scrollListener = _scrollContainerRef.addEventListener("scroll", throttle(scrollHandler(setScrollPosition), 100));
+    const scrollListener = _scrollContainerRef.addEventListener("scroll", throttle(scrollHandler(setAtScrollConstraint), 100));
 
     return () => {
       _scrollContainerRef.removeEventListener("scroll", scrollListener);
     };
-  }, [scrollContainer, setScrollPosition]);
-
-  useEffect(() => {
-    if (Math.abs(scrollPosition + scrollContainer.current.offsetWidth - scrollContainer.current.scrollWidth) < 90) {
-      setAtScrollConstraint("end");
-    } else if (scrollPosition < 90) {
-      setAtScrollConstraint("start");
-    } else {
-      setAtScrollConstraint("none");
-    }
-  }, [scrollPosition, scrollContainer]);
+  }, [scrollContainer, setAtScrollConstraint]);
 
   useEffect(() => {
     async function getData() {
-      const result = await fetch(dataUrl, { headers: { Authorization: `Bearer ${process.env.REACT_APP_TMDB_BEARER_READONLY}` } });
-      const info = await result.json();
+      const response = await tmdbRequest(dataUrl);
+      const result = await response.json();
 
-      info.results.sort((a, b) => b.popularity - a.popularity);
+      result.results.sort((a, b) => b.popularity - a.popularity);
 
-      setData(info.results);
+      setData(result.results);
     }
 
     getData();
@@ -87,7 +53,7 @@ export function ScrollingSelector({ dataUrl, placeholderData, headerText, width 
                       loading="lazy"
                       width="150"
                       height="225"
-                      src={Boolean(movie.poster_path) ? `https://image.tmdb.org/t/p/${imgSize}${movie.poster_path}` : undefined}
+                      src={Boolean(movie.poster_path) ? generateTmdbImageUrl(imgSize, movie.poster_path) : undefined}
                       alt="Poster"
                       style={{ width }}
                     />
