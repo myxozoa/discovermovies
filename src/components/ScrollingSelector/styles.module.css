@@ -18,6 +18,24 @@
   scroll-snap-type: inline mandatory;
 }
 
+.scroller::-webkit-scrollbar {
+  height: 10px;
+}
+
+.scroller::-webkit-scrollbar-track {
+  background-color: transparent;
+}
+
+.scroller::-webkit-scrollbar-track:hover {
+  border-radius: 10px;
+  background-color: rgba(38, 35, 43, 0.2);
+}
+
+.scroller::-webkit-scrollbar-thumb {
+  background-color: #2a282c;
+  border-radius: 10px;
+}
+
 .scroller > li:last-of-type figure {
   position: relative;
 }
