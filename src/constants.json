@@ -1,3 +1,4 @@
 {
-  "tmdbImageURL": "https://image.tmdb.org/t/p/"
+  "tmdbImageURL": "https://image.tmdb.org/t/p/",
+  "tmdbTrendingURL": "https://api.themoviedb.org/3/trending/"
 }

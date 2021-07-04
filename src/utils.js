@@ -1,4 +1,4 @@
-import { tmdbImageURL } from "./constants.json";
+import { tmdbImageURL, tmdbTrendingURL } from "./constants.json";
 
 /**
  * Throttle that ensures the last call is made
@@ -36,4 +36,8 @@ export function tmdbRequest(url) {
 
 export function generateTmdbImageUrl(width, imageLocator) {
   return `${tmdbImageURL}${width}${imageLocator}`;
+}
+
+export function generateTmdbTrendingUrl(type, time) {
+  return `${tmdbTrendingURL}${type}/${time}`;
 }

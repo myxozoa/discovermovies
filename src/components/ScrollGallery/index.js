@@ -1,9 +1,9 @@
 import React, { useEffect, useState, useRef } from "react";
-import { throttle, tmdbRequest, generateTmdbImageUrl } from "../../utils";
+import { throttle, tmdbRequest } from "../../utils";
 import { scrollHandler, scroll } from "./utils";
 import styles from "./styles.module.css";
 
-export function ScrollingSelector({ dataUrl, placeholderData, headerText, width = "150px", height = "225px", imgSize = "w342" }) {
+export function ScrollGallery({ dataUrl, imagePath, generateImageURL, placeholderData, headerText, width = "150px", height = "225px", imgSize = "w342" }) {
   const [data, setData] = useState(placeholderData);
   const [atScrollConstraint, setAtScrollConstraint] = useState("start"); // 'none' | 'start' | 'end'
   const scrollContainer = useRef(null);
@@ -19,12 +19,16 @@ export function ScrollingSelector({ dataUrl, placeholderData, headerText, width 
 
   useEffect(() => {
     async function getData() {
-      const response = await tmdbRequest(dataUrl);
-      const result = await response.json();
+      try {
+        const response = await tmdbRequest(dataUrl);
+        const result = await response.json();
 
-      result.results.sort((a, b) => b.popularity - a.popularity);
+        result.results.sort((a, b) => b.popularity - a.popularity);
 
-      setData(result.results);
+        setData(result.results);
+      } catch (error) {
+        throw new Error(error);
+      }
     }
 
     getData();
@@ -42,9 +46,9 @@ export function ScrollingSelector({ dataUrl, placeholderData, headerText, width 
           </div>
         </button>
         <ul ref={scrollContainer} className={styles.scroller}>
-          {data.map((movie) => {
+          {data.map((item) => {
             return (
-              <li tabIndex="1" className={styles.item} key={movie.id}>
+              <li tabIndex="1" className={styles.item} key={item.id}>
                 <figure>
                   <picture style={{ width, height }}>
                     <img
@@ -53,12 +57,12 @@ export function ScrollingSelector({ dataUrl, placeholderData, headerText, width 
                       loading="lazy"
                       width="150"
                       height="225"
-                      src={Boolean(movie.poster_path) ? generateTmdbImageUrl(imgSize, movie.poster_path) : undefined}
+                      src={Boolean(item[imagePath]) ? generateImageURL(imgSize, item[imagePath]) : undefined}
                       alt="Poster"
                       style={{ width }}
                     />
                   </picture>
-                  <figcaption className={styles.title}>{movie.title || movie.name}</figcaption>
+                  <figcaption className={styles.title}>{item.title || item.name}</figcaption>
                 </figure>
               </li>
             );

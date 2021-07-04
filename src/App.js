@@ -1,6 +1,7 @@
 import React from "react";
-import { ScrollingSelector } from "./components/ScrollingSelector";
+import { ScrollGallery } from "./components/ScrollGallery";
 import { Header } from "./components/Header";
+import { generateTmdbTrendingUrl, generateTmdbImageUrl } from "./utils";
 import { trending } from "./placeholderState.json";
 import "./App.css";
 
@@ -8,8 +9,9 @@ function App() {
   return (
     <div className="App">
       <Header />
-      <ScrollingSelector dataUrl="https://api.themoviedb.org/3/trending/movie/week" headerText="Trending Movies" placeholderData={trending} />
-      <ScrollingSelector dataUrl="https://api.themoviedb.org/3/trending/tv/week" headerText="Trending TV" placeholderData={trending} />
+      <ScrollGallery dataUrl={generateTmdbTrendingUrl("movie", "week")} generateImageURL={generateTmdbImageUrl} imagePath="poster_path" headerText="Trending Movies" placeholderData={trending} />
+      <ScrollGallery dataUrl={generateTmdbTrendingUrl("tv", "week")} generateImageURL={generateTmdbImageUrl} imagePath="poster_path" headerText="Trending TV" placeholderData={trending} />
+      <ScrollGallery dataUrl={generateTmdbTrendingUrl("person", "week")} generateImageURL={generateTmdbImageUrl} imagePath="profile_path" headerText="Trending People" placeholderData={trending} />
     </div>
   );
 }
