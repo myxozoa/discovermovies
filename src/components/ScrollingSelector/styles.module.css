@@ -189,6 +189,11 @@
   transition: transform 50ms ease-in, opacity 200ms ease-in;
 }
 
+.scrollButton[disabled] {
+  visibility: hidden;
+  user-select: none;
+}
+
 .leftScrollButton {
   left: 0;
 }

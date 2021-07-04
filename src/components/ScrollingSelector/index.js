@@ -4,26 +4,51 @@ import styles from "./styles.module.css";
 
 function throttle(func, limit = 200) {
   let waiting = false;
-  return () => {
+  return (...args) => {
     if (!waiting) {
-      func();
+      func(...args);
       waiting = true;
       setTimeout(() => (waiting = false), limit);
     }
   };
 }
 
+const scrollHandler = (setState, element) => (event) => {
+  const scrollPosition = event.target.scrollLeft;
+  setState(scrollPosition);
+};
+
+const scroll = (direction, ref) => () => {
+  if (direction === "left") {
+    ref.current.scrollBy({ left: -330, behavior: "smooth" });
+  } else {
+    ref.current.scrollBy({ left: 330, behavior: "smooth" });
+  }
+};
+
 export function ScrollingSelector({ dataUrl, placeholderData, label, width = "150px", height = "225px", imgSize = "w342" }) {
   const [data, setData] = useState(placeholderData);
+  const [scrollPosition, setScrollPosition] = useState(0);
+  const [atScrollConstraint, setAtScrollConstraint] = useState("none"); // 'none' | 'start' | 'end'
   const scrollContainer = useRef(null);
 
-  const scroll = (direction) => () => {
-    if (direction === "left") {
-      scrollContainer.current.scrollBy({ left: -300, behavior: "smooth" });
+  useEffect(() => {
+    const scrollListener = scrollContainer.current.addEventListener("scroll", throttle(scrollHandler(setScrollPosition), 100));
+
+    return () => {
+      scrollContainer.current.removeEventListener("scroll", scrollListener);
+    };
+  }, [scrollHandler, scrollContainer, setScrollPosition]);
+
+  useEffect(() => {
+    if (Math.abs(scrollPosition + scrollContainer.current.offsetWidth - scrollContainer.current.scrollWidth) < 90) {
+      setAtScrollConstraint("end");
+    } else if (scrollPosition < 90) {
+      setAtScrollConstraint("start");
     } else {
-      scrollContainer.current.scrollBy({ left: 300, behavior: "smooth" });
+      setAtScrollConstraint("none");
     }
-  };
+  }, [scrollPosition, scrollContainer]);
 
   useEffect(() => {
     async function getData() {
@@ -44,10 +69,10 @@ export function ScrollingSelector({ dataUrl, placeholderData, label, width = "15
     <div className={styles.container}>
       <h2 className={styles.header}>{label}</h2>
       <div className={styles.row}>
-        <button className={`${styles.scrollButton} ${styles.leftScrollButton}`} onClick={throttle(scroll("left"))}>
+        <button disabled={atScrollConstraint === "start"} className={`${styles.scrollButton} ${styles.leftScrollButton}`} onClick={throttle(scroll("left", scrollContainer))}>
           <div>
             <svg fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 152 287">
-              <path d="M136 274L27 144 136 13" stroke-width="40" />
+              <path d="M136 274L27 144 136 13" strokeWidth="50" />
             </svg>
           </div>
         </button>
@@ -74,10 +99,10 @@ export function ScrollingSelector({ dataUrl, placeholderData, label, width = "15
             );
           })}
         </ul>
-        <button className={`${styles.scrollButton} ${styles.rightScrollButton}`} onClick={throttle(scroll("right"))}>
+        <button disabled={atScrollConstraint === "end"} className={`${styles.scrollButton} ${styles.rightScrollButton}`} onClick={throttle(scroll("right", scrollContainer))}>
           <div>
             <svg fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 152 287">
-              <path d="M16 13l109 131L16 274" stroke-width="40" />
+              <path d="M16 13l109 131L16 274" strokeWidth="50" />
             </svg>
           </div>
         </button>
