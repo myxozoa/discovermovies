@@ -1,0 +1,12 @@
+.container {
+  max-width: 100%;
+  height: 50px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0 20px;
+}
+
+.tmdb {
+  width: 100px;
+}

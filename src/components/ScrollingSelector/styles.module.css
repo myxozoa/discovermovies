@@ -1,0 +1,79 @@
+.header {
+  margin-left: 20px;
+}
+
+.scroller {
+  --gap: 20px;
+
+  display: flex;
+  overflow-x: scroll;
+  flex-direction: row;
+  gap: calc(var(--gap) / 2);
+  margin: 0 10px;
+
+  padding-inline: var(--gap);
+  scroll-padding-inline: var(--gap);
+  padding-block-end: calc(var(--gap) / 2);
+
+  scroll-snap-type: inline mandatory;
+}
+
+.scroller > li:last-of-type figure {
+  position: relative;
+}
+
+.scroller > li:last-of-type figure::after {
+  content: "";
+  position: absolute;
+
+  inline-size: var(--gap);
+  block-size: 100%;
+
+  inset-block-start: 0;
+  inset-inline-end: calc(var(--gap) * -1);
+}
+
+.item {
+  height: 100%;
+  list-style-type: none;
+  display: inline-block;
+  cursor: pointer;
+  user-select: none;
+}
+
+.item figure {
+  margin: 0;
+  scroll-snap-align: start;
+  width: min-content;
+}
+
+.item figure picture {
+  position: relative;
+  display: block;
+}
+
+.item figure picture img {
+  display: block;
+  min-width: 100%;
+  height: 100%;
+  border-radius: 5px;
+  background-image: linear-gradient(to bottom, hsl(0 0% 40%), hsl(0 0% 20%));
+}
+
+.item figure picture img::after {
+  content: "";
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 5px;
+  background-image: linear-gradient(to bottom, hsl(0 0% 40%), hsl(0 0% 20%));
+}
+
+.title {
+  word-break: break-word;
+  margin-top: 10px;
+  height: 50px;
+}
