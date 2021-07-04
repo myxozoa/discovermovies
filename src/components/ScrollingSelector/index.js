@@ -13,7 +13,7 @@ function throttle(func, limit = 200) {
   };
 }
 
-const scrollHandler = (setState, element) => (event) => {
+const scrollHandler = (setState) => (event) => {
   const scrollPosition = event.target.scrollLeft;
   setState(scrollPosition);
 };
@@ -26,19 +26,20 @@ const scroll = (direction, ref) => () => {
   }
 };
 
-export function ScrollingSelector({ dataUrl, placeholderData, label, width = "150px", height = "225px", imgSize = "w342" }) {
+export function ScrollingSelector({ dataUrl, placeholderData, headerText, width = "150px", height = "225px", imgSize = "w342" }) {
   const [data, setData] = useState(placeholderData);
   const [scrollPosition, setScrollPosition] = useState(0);
   const [atScrollConstraint, setAtScrollConstraint] = useState("none"); // 'none' | 'start' | 'end'
   const scrollContainer = useRef(null);
 
   useEffect(() => {
-    const scrollListener = scrollContainer.current.addEventListener("scroll", throttle(scrollHandler(setScrollPosition), 100));
+    const _scrollContainerRef = scrollContainer.current;
+    const scrollListener = _scrollContainerRef.addEventListener("scroll", throttle(scrollHandler(setScrollPosition), 100));
 
     return () => {
-      scrollContainer.current.removeEventListener("scroll", scrollListener);
+      _scrollContainerRef.removeEventListener("scroll", scrollListener);
     };
-  }, [scrollHandler, scrollContainer, setScrollPosition]);
+  }, [scrollContainer, setScrollPosition]);
 
   useEffect(() => {
     if (Math.abs(scrollPosition + scrollContainer.current.offsetWidth - scrollContainer.current.scrollWidth) < 90) {
@@ -57,8 +58,6 @@ export function ScrollingSelector({ dataUrl, placeholderData, label, width = "15
 
       info.results.sort((a, b) => b.popularity - a.popularity);
 
-      console.log(info.results);
-
       setData(info.results);
     }
 
@@ -67,7 +66,7 @@ export function ScrollingSelector({ dataUrl, placeholderData, label, width = "15
 
   return (
     <div className={styles.container}>
-      <h2 className={styles.header}>{label}</h2>
+      <h2 className={styles.header}>{headerText}</h2>
       <div className={styles.row}>
         <button disabled={atScrollConstraint === "start"} className={`${styles.scrollButton} ${styles.leftScrollButton}`} onClick={throttle(scroll("left", scrollContainer))}>
           <div>

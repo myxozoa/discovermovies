@@ -8,8 +8,8 @@ function App() {
   return (
     <div className="App">
       <Header />
-      <ScrollingSelector dataUrl="https://api.themoviedb.org/3/trending/movie/week" label="Trending Movies" placeholderData={trending} />
-      <ScrollingSelector dataUrl="https://api.themoviedb.org/3/trending/tv/week" label="Trending TV" placeholderData={trending} />
+      <ScrollingSelector dataUrl="https://api.themoviedb.org/3/trending/movie/week" headerText="Trending Movies" placeholderData={trending} />
+      <ScrollingSelector dataUrl="https://api.themoviedb.org/3/trending/tv/week" headerText="Trending TV" placeholderData={trending} />
     </div>
   );
 }
